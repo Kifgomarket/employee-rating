@@ -21,8 +21,9 @@ const eslintConfig = [
       "@typescript-eslint/no-empty-object-type": "off",
       "@typescript-eslint/no-unused-expressions": "off",
       "import/no-anonymous-default-export": "off",
+      "no-var": "off",
     },
-  }
+  },
 ];
 
 export default eslintConfig;
