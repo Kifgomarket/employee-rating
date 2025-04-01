@@ -1,25 +1,21 @@
 import axios, { AxiosError, CreateAxiosDefaults, ResponseType } from "axios";
 
-type ApiMethod = "get" | "post" | "put" | "patch" | "delete";
-
 const toastService = {
   //TODO : will be replaced with toast component.
-  error: (message: string) => {},
+  error: (_message: string) => {},
 };
 
 const createApiClient = ({
   baseURL,
-  method,
-  responseType,
+  responseType = "json",
   options,
   headers,
   getToken,
   logout,
 }: {
   baseURL: string;
-  method: ApiMethod;
-  responseType: ResponseType;
-  getToken: () => string | undefined | null;
+  responseType?: ResponseType;
+  getToken: () => string | null;
   logout: () => void;
   headers?: CreateAxiosDefaults["headers"];
   options?: Omit<
@@ -29,7 +25,6 @@ const createApiClient = ({
 }) => {
   const apiClient = axios.create({
     baseURL: baseURL,
-    method: method,
     responseType: responseType,
     headers: headers ?? { "Content-Type": "application/json" },
     ...options,
@@ -56,7 +51,7 @@ const createApiClient = ({
         logout();
         toastService.error("You have no access.");
       }
-      Promise.reject(error);
+      return Promise.reject(error);
     },
   );
 
