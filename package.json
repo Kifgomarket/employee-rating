@@ -11,6 +11,7 @@
     "create-diff:mac": "{ git diff -- . ':(exclude)node_modules' ':(exclude)package-lock.json' ':(exclude)src/app/fonts' ':(exclude)public' && git ls-files --others --exclude-standard ':!node_modules/*' ':!package-lock.json' ':!src/app/fonts/*' ':!public/*' | while read file; do echo \"+++ $file\"; cat \"$file\"; done; } > ~/Desktop/diff.txt"
   },
   "dependencies": {
+    "@hookform/resolvers": "^5.0.1",
     "@prisma/client": "^6.5.0",
     "@tanstack/react-query": "^5.71.1",
     "axios": "^1.8.4",
@@ -19,6 +20,7 @@
     "next": "15.2.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
+    "react-hook-form": "^7.55.0",
     "tailwind-merge": "^3.1.0",
     "zod": "^3.24.2",
     "zustand": "^5.0.3"
