@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "next lint",
     "migrate": "npx prisma db push && npx prisma generate",
-    "create-diff:win": "powershell -Command \"git diff -- . ':!node_modules' ':!public' ':!static' > $env:USERPROFILE\\Desktop\\git-diff.txt\"",
+    "create-diff:win": "@powershell -Command \"git diff -- . ':^node_modules' ':^package-lock.json' ':^src/app/fonts' ':^public' | Out-File -FilePath $env:USERPROFILE\\Desktop\\diff.txt; git ls-files --others --exclude-standard ':!node_modules/*' ':!package-lock.json' ':!src/app/fonts/*' ':!public/*' | ForEach-Object { Write-Output ('+++ ' + $_); Get-Content $_ } | Out-File -FilePath $env:USERPROFILE\\Desktop\\diff.txt -Append\"",
     "create-diff:mac": "{ git diff -- . ':(exclude)node_modules' ':(exclude)package-lock.json' ':(exclude)src/app/fonts' ':(exclude)public' && git ls-files --others --exclude-standard ':!node_modules/*' ':!package-lock.json' ':!src/app/fonts/*' ':!public/*' | while read file; do echo \"+++ $file\"; cat \"$file\"; done; } > ~/Desktop/diff.txt"
   },
   "dependencies": {
