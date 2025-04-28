@@ -61,7 +61,6 @@ export async function POST(request: NextRequest) {
             Owner: {
                 connect: {
                     id: user.id,
-                    
                 },
             },
         },
