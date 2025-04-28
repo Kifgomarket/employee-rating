@@ -2,6 +2,8 @@ import { RegisterUserSchema } from "@/schemas/user.schema";
 import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma"; // Adjust the path based on your project structure
 import argon2 from "argon2";
+import { UserRole } from "@prisma/client";
+import { OWNER_PERMISSIONS } from "@/app/permission";
 
 export async function POST(request: NextRequest) {
   try {
@@ -38,7 +40,7 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    const { firstName, lastName, email, password } = validatedData;
+    const { firstName, lastName, email, password , organizationName} = validatedData;
 
     // Hashed the password securely
     const hashedPassword = await argon2.hash(password);
@@ -52,7 +54,26 @@ export async function POST(request: NextRequest) {
           email,
           password: hashedPassword,
         },
-      });
+      })
+      const organization = await prisma.organization.create({
+        data: {
+            name: organizationName,
+            Owner: {
+                connect: {
+                    id: user.id,
+                },
+            },
+        },
+    })
+
+    const organizationMember = await tx.organizationMember.create({
+        data: {
+            organizationId: organization.id,
+            userId: user.id,
+            role: UserRole.OWNER,
+            permissions: OWNER_PERMISSIONS,
+        },
+    })
     });
     return NextResponse.json(
       { success: true, message: "User created successfully." },
