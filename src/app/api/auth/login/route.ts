@@ -1,3 +1,4 @@
+import { LoginUserSchema } from "@/schemas/user.schema";
 import { NextRequest, NextResponse } from "next/server";
 
 /**
@@ -7,10 +8,12 @@ import { NextRequest, NextResponse } from "next/server";
  */
 export async function POST(request: NextRequest) {
   try {
+    const body = await request.json();
+    const { email, password } = LoginUserSchema.parse(body);
     return NextResponse.json(
       {
         success: true,
-        data: {},
+        data: {email, password},
       },
       {
         status: 200,
