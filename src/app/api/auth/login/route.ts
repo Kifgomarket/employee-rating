@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/lib/prisma";
 import { verify } from "argon2";
 import handleError from "../../helpers/handleError";
-
+import generateToken, { IJWTPayload } from "../../helpers/generateToken";
 /**
  * @route POST /api/auth/login
  * @desc Handle user login request and return a success response
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
         OrganizationMembers: true,
       },
     });
-    
+
     const invalidCredientialsResponse = NextResponse.json(
       {
         success: false,
@@ -44,12 +44,20 @@ export async function POST(request: NextRequest) {
       return invalidCredientialsResponse;
     }
 
+    const token = generateToken<IJWTPayload>({
+      id: user.id,
+      organizations: user.OrganizationMembers,
+    });
+
     const { password: _, ...userData } = user;
 
     return NextResponse.json(
       {
         success: true,
-        data: {email, password},
+        data: {
+          user: userData,
+          token,
+        },
       },
       {
         status: 200,
