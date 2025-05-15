@@ -29,7 +29,7 @@ export async function sendEmail({
     service: "gmail",
     auth: {
       type: "oauth2",
-      user: "sabesh769@gmail.com",
+      user: process.env.EMAIL_USER,
       clientId: process.env.OAUTH_CLIENT_ID,
       clientSecret: process.env.OAUTH_CLIENT_SECRET,
       refreshToken: process.env.OAUTH_REFRESH_TOKEN,
@@ -38,7 +38,7 @@ export async function sendEmail({
   });
 
   return await transporter.sendMail({
-    from: "sabesh769@gmail.com",
+    from: process.env.EMAIL_USER,
     to: to,
     subject: subject,
     html,

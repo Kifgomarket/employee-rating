@@ -134,7 +134,7 @@ export async function POST(
           organizationId,
         });
 
-        const inviteLink = " "; //need to add the code here
+        const inviteLink = `${process.env.NEXT_PUBLIC_HOST_URL}/accept-invite?token=${token}`; //need to add the code here
 
         //send invitation email
         const emailHtml = await render(
