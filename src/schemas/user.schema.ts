@@ -86,4 +86,11 @@ const InviteUserSchema = z.object({
   }),
 });
 
-export { InviteUserSchema, LoginUserSchema, RegisterUserSchema };
+const ResendInviteSchema = z.object({
+  id: z
+    .string({ required_error: "id is required" })
+    .max(255, { message: "Id cannot exceed 255 characters" })
+    .trim(),
+});
+
+export { InviteUserSchema, LoginUserSchema, RegisterUserSchema ,ResendInviteSchema };
