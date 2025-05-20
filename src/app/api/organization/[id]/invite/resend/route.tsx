@@ -4,6 +4,10 @@ import { ResendInviteSchema } from "@/schemas/user.schema";
 import handleError from "@/app/api/helpers/handleError";
 import { UserStatus } from "@prisma/client";
 import prisma from "@/lib/prisma";
+import generateInviteToken from "../generateInviteToken";
+import InviteUser from "@/email-templates/InviteUser";
+import { sendEmail } from "@/lib/nodemailer";
+import { render } from "@react-email/components";
 
 export async function POST(
   request: NextRequest,
@@ -73,6 +77,30 @@ export async function POST(
             { status: 404 },
           );
         }
+        const token = generateInviteToken({
+          id: invitedUser.id,
+          organizationId,
+        });
+
+        const inviteLink = `${process.env.NEXT_PUBLIC_HOST_URL as string}/accept-invite?token=${token};`
+
+        const emailHtml = await render(
+          <InviteUser
+            invitedByUsername={inviter.firstName || inviter.email}
+            teamName={organization.name}
+            username={invitedUser.firstName || invitedUser.email}
+            invitedByEmail={inviter.email}
+            inviteLink={inviteLink}
+          />,
+        );
+
+        await sendEmail({
+          to: invitedUser.email,
+          subject: `Reminder: Join ${organization.name}`,
+          html: emailHtml,
+        });
+  
+        return NextResponse.json({ success: true });
       } catch (error) {
         return handleError(error, "Failed to resend invitation");
       }
