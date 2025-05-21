@@ -20,7 +20,7 @@ export async function POST(
     request,
     {
       organizationId,
-      permissions: ["ORGANIZATION::", "ORGANIZATION:INVITE:*"],
+      permissions: ["ORGANIZATION:*:*", "ORGANIZATION:INVITE:*"],
     },
     async (inviter) => {
       try {
@@ -82,7 +82,7 @@ export async function POST(
           organizationId,
         });
 
-        const inviteLink = `${process.env.NEXT_PUBLIC_HOST_URL as string}/accept-invite?token=${token};`
+        const inviteLink = `${process.env.NEXT_PUBLIC_HOST_URL as string}/accept-invite?token=${token};`;
 
         const emailHtml = await render(
           <InviteUser
@@ -99,8 +99,23 @@ export async function POST(
           subject: `Reminder: Join ${organization.name}`,
           html: emailHtml,
         });
-  
-        return NextResponse.json({ success: true });
+
+        return NextResponse.json(
+          {
+            success: true,
+            message: "Invitation resent successfully.",
+            data: {
+              userId: invitedUser.id,
+              email: invitedUser.email,
+              organization: {
+                id: organization.id,
+                name: organization.name,
+              },
+              inviteResent: true,
+            },
+          },
+          { status: 200 },
+        );
       } catch (error) {
         return handleError(error, "Failed to resend invitation");
       }
