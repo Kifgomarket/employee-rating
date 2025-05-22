@@ -5,7 +5,10 @@ import {
   IJWTInvitePayload,
   INVITE_TOKEN_TYPE,
 } from "../../organization/[id]/invite/generateInviteToken";
+import prisma from "@/lib/prisma";
 import { hash } from "argon2";
+import { UserStatus } from "@prisma/client";
+import generateToken, { IJWTPayload } from "../../helpers/generateToken";
 
 export async function POST(request: NextRequest) {
   try {
@@ -29,5 +32,47 @@ export async function POST(request: NextRequest) {
       );
     }
     const hashedPassword = await hash(password);
+     const result = await prisma.$transaction(async (tx) => {
+      const user = await tx.user.update({
+        where: {
+          id: decodedToken.id,
+        },
+        data: {
+          firstName,
+          lastName,
+          password: hashedPassword,
+        },
+        select: {
+          id: true,
+          email: true,
+          firstName: true,
+          lastName: true,
+          OrganizationMembers: {
+            where: {
+              organizationId: decodedToken.organizationId,
+            },
+            select: {
+              organizationId: true,
+              role: true,
+              permissions: true,
+              status: true,
+            },
+          },
+        },
+      });
+      await tx.organizationMember.update({
+        where: {
+          userId_organizationId: {
+            userId: decodedToken.id,
+            organizationId: decodedToken.organizationId,
+          },
+        },
+        data: {
+          status: UserStatus.ACTIVE,
+        },
+      });
+      return user;
+    });
+    
   } catch (error) {}
 }
