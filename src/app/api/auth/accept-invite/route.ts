@@ -9,6 +9,8 @@ import prisma from "@/lib/prisma";
 import { hash } from "argon2";
 import { UserStatus } from "@prisma/client";
 import generateToken, { IJWTPayload } from "../../helpers/generateToken";
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/binary";
+import handleError from "../../helpers/handleError";
 
 export async function POST(request: NextRequest) {
   try {
@@ -32,7 +34,7 @@ export async function POST(request: NextRequest) {
       );
     }
     const hashedPassword = await hash(password);
-     const result = await prisma.$transaction(async (tx) => {
+    const result = await prisma.$transaction(async (tx) => {
       const user = await tx.user.update({
         where: {
           id: decodedToken.id,
@@ -73,6 +75,47 @@ export async function POST(request: NextRequest) {
       });
       return user;
     });
-    
-  } catch (error) {}
+
+    const authToken = generateToken<IJWTPayload>({
+      id: result.id,
+      organizations: result.OrganizationMembers,
+    });
+
+    const responseData = {
+      user: {
+        id: result.id,
+        email: result.email,
+        firstName: result.firstName,
+        lastName: result.lastName,
+      },
+
+      organizationMemberships: result.OrganizationMembers,
+      token: authToken,
+    };
+
+    return NextResponse.json(
+      {
+        success: true,
+
+        data: responseData,
+      },
+      { status: 200 },
+    );
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError) {
+      if (error.code === "P2025") {
+        return NextResponse.json(
+          {
+            success: false,
+            error: {
+              code: "INVITATION_NOT_FOUND",
+              message: "invitation not found or already accepted",
+            },
+          },
+          { status: 404 },
+        );
+      }
+    }
+    return handleError(error, "Failed to accept invitation");
+  }
 }
