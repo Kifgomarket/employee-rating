@@ -132,10 +132,17 @@ const AcceptInviteUserSchema = z.object({
         "Password can only contain letters, numbers, and special characters (!@#$%^&*)",
     }),
 });
+
+const AssignEmployeesSchema = z.object({
+  supervisorId: z.string(),
+  employeeIds: z.array(z.string()).nonempty(),
+});
+
 export {
   InviteUserSchema,
   LoginUserSchema,
   RegisterUserSchema,
   ResendInviteSchema,
   AcceptInviteUserSchema,
+  AssignEmployeesSchema,
 };
