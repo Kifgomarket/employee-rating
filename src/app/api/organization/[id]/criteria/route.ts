@@ -48,3 +48,35 @@ export async function POST(
     },
   );
 }
+
+export async function GET(
+  request: NextRequest,
+  { params }: { params: Promise<{ id: string }> },
+) {
+  const { id: organizationId } = await params;
+  return privateRoute(
+    request,
+    {
+      organizationId,
+      permissions: ["ORGANIZATION:CRITERIA:READ", "ORGANIZATION:*:*"],
+    },
+    async () => {
+      try {
+        const criteriaList = await prisma.criteria.findMany({
+          where: {
+            orgId: organizationId,
+          },
+        });
+        return NextResponse.json(
+          {
+            success: true,
+            data: criteriaList,
+          },
+          { status: 200 },
+        );
+      } catch (error) {
+        return handleError(error, "Failed to fetch criteria");
+      }
+    },
+  );
+}
