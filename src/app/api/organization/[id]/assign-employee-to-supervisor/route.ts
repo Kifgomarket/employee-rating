@@ -2,7 +2,8 @@ import privateRoute from "@/app/api/helpers/privateRoute";
 import { AssignEmployeesSchema } from "@/schemas/user.schema";
 import { OrganizationStatus, UserRole, UserStatus } from "@prisma/client";
 import { NextRequest, NextResponse } from "next/server";
-import  prisma  from "@/lib/prisma"; 
+import prisma from "@/lib/prisma";
+import handleError from "@/app/api/helpers/handleError";
 
 export async function POST(
   request: NextRequest,
@@ -19,7 +20,7 @@ export async function POST(
     async () => {
       try {
         const { supervisorId, employeeIds } = AssignEmployeesSchema.parse(body);
-         //Check if organization is active
+        //Check if organization is active
         const organization = await prisma.organization.findUnique({
           where: { id: organizationId, status: OrganizationStatus.ACTIVE },
           select: { id: true },
@@ -85,7 +86,32 @@ export async function POST(
             { status: 400 },
           );
         }
-      } catch {}
+
+        // Assign employees to supervisor
+        await prisma.organizationMember.updateMany({
+          where: {
+            userId: { in: employeeIds },
+            organizationId,
+          },
+          data: {
+            supervisorId,
+          },
+        });
+
+        return NextResponse.json(
+          {
+            success: true,
+            data: {
+              assignedEmployees: employeeIds.length,
+              supervisorId,
+              organizationId,
+            },
+          },
+          { status: 200 },
+        );
+      } catch (error) {
+        return handleError(error, "Failed to assign employees to supervisor");
+      }
     },
   );
 }
