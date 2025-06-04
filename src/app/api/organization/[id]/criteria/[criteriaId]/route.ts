@@ -65,3 +65,33 @@ export async function PATCH(
     },
   );
 }
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: Promise<{ criteriaId: string }> },
+) {
+  const { criteriaId } = await params;
+  return privateRoute(
+    request,
+    {
+      permissions: ["ORGANIZATION:CRITERIA:DELETE", "ORGANIZATION:*:*"],
+    },
+    async () => {
+      try {
+        // Delete criteria
+        await prisma.criteria.delete({
+          where: { id: criteriaId },
+        });
+        return NextResponse.json(
+          {
+            success: true,
+            message: "Criteria deleted successfully",
+          },
+          { status: 200 },
+        );
+      } catch (error) {
+        return handleError(error, "Failed to delete criteria");
+      }
+    },
+  );
+}
