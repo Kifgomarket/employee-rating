@@ -48,6 +48,36 @@ export async function POST(
             { status: 403 },
           );
         }
+
+       //Get all criteria IDs from the payload
+        const criteriaIds = criteriaScores.map((cs) => cs.criteriaId);
+        // Find all matching criteria in the organization
+        const criteria = await prisma.criteria.findMany({
+          where: {
+            id: { in: criteriaIds },
+            orgId: organizationId,
+          },
+          select: { id: true },
+        });
+        // Validate all IDs exist
+        if (criteria.length !== criteriaScores.length) {
+          const validIds = new Set(criteria.map((c) => c.id));
+          const missingIds = criteriaScores
+            .filter((cs) => !validIds.has(cs.criteriaId))
+            .map((cs) => cs.criteriaId);
+          return NextResponse.json(
+            {
+              success: false,
+              error: {
+                code: "INVALID_CRITERIA",
+                message: `The following criteria do not belong to this organization: ${missingIds.join(", ")}`,
+              },
+            },
+            { status: 400 },
+          );
+        }
+
+        return NextResponse.json({ success: true });
       } catch (error) {
         return handleError(error, "Failed to create rating");
       }
