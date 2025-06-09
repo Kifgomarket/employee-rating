@@ -49,7 +49,7 @@ export async function POST(
           );
         }
 
-       //Get all criteria IDs from the payload
+        //Get all criteria IDs from the payload
         const criteriaIds = criteriaScores.map((cs) => cs.criteriaId);
         // Find all matching criteria in the organization
         const criteria = await prisma.criteria.findMany({
@@ -59,12 +59,14 @@ export async function POST(
           },
           select: { id: true },
         });
+
         // Validate all IDs exist
         if (criteria.length !== criteriaScores.length) {
           const validIds = new Set(criteria.map((c) => c.id));
           const missingIds = criteriaScores
             .filter((cs) => !validIds.has(cs.criteriaId))
             .map((cs) => cs.criteriaId);
+
           return NextResponse.json(
             {
               success: false,
@@ -77,7 +79,35 @@ export async function POST(
           );
         }
 
-        return NextResponse.json({ success: true });
+        const maxOverallScore = criteriaScores.reduce(
+          (sum, cs) => sum + cs.score,
+          0,
+        );
+        // Create rating first
+        const newRating = await prisma.rating.create({
+          data: {
+            periodStart: new Date(periodStart),
+            periodEnd: new Date(periodEnd),
+            feedback,
+            overallScore: maxOverallScore,
+            maxOverallScore,
+            employeeId,
+            supervisorId: user.id,
+            criteriaScores: {
+              create: criteriaScores.map((cs) => ({
+                criteriaId: cs.criteriaId,
+                score: cs.score,
+              })),
+            },
+          },
+          include: {
+            criteriaScores: true,
+          },
+        });
+        return NextResponse.json(
+          { success: true, data: newRating },
+          { status: 201 },
+        );
       } catch (error) {
         return handleError(error, "Failed to create rating");
       }
