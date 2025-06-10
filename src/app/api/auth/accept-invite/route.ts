@@ -35,6 +35,18 @@ export async function POST(request: NextRequest) {
     }
     const hashedPassword = await hash(password);
     const result = await prisma.$transaction(async (tx) => {
+      await tx.organizationMember.update({
+        where: {
+          userId_organizationId: {
+            userId: decodedToken.id,
+            organizationId: decodedToken.organizationId,
+          },
+        },
+        data: {
+          status: UserStatus.ACTIVE,
+        },
+      });
+
       const user = await tx.user.update({
         where: {
           id: decodedToken.id,
@@ -62,17 +74,7 @@ export async function POST(request: NextRequest) {
           },
         },
       });
-      await tx.organizationMember.update({
-        where: {
-          userId_organizationId: {
-            userId: decodedToken.id,
-            organizationId: decodedToken.organizationId,
-          },
-        },
-        data: {
-          status: UserStatus.ACTIVE,
-        },
-      });
+
       return user;
     });
 
