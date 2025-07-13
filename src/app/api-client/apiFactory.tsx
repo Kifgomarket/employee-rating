@@ -1,4 +1,9 @@
-import { useMutation, UseMutationOptions } from "@tanstack/react-query";
+import {
+  useMutation,
+  UseMutationOptions,
+  useQuery,
+  UseQueryOptions,
+} from "@tanstack/react-query";
 import { AxiosError, AxiosInstance, AxiosResponse, isAxiosError } from "axios";
 import queryClient from "./QueryClient";
 
@@ -11,7 +16,6 @@ const toastService = {
 
 type HttpMethod = "post" | "put" | "patch" | "delete";
 
-// Mutation context to store previous data for rollback in case of failure
 export type MutationContext<TOptimisticData> =
   | {
       previousData: TOptimisticData | undefined;
@@ -61,7 +65,6 @@ export function useCreateMutation<
     MutationContext<TOptimisticData>
   >({
     mutationFn: async ({ params, body }) => {
-      // Handle dynamic URL parts with variable replacement using params
       const finalUrl = url.replace(/\${(.*?)}/g, (_, key) => {
         const paramValue = params?.[key];
         if (!paramValue) {
@@ -139,5 +142,58 @@ export function useCreateMutation<
       }
     },
     ...mutationOptions,
+  });
+}
+
+interface CreateQueryParams<TData> {
+  apiClient: AxiosInstance;
+  url: string; // URL can have dynamic parts (e.g., `/api/resource/${id}`)
+  errorMessage?: string | ((error: AxiosError) => string);
+  defaultValue?: TData;
+  queryKey: string;
+  queryParams?: Record<string, any>;
+  queryOptions?: Omit<
+    UseQueryOptions<TData, AxiosError, TData, unknown[]>,
+    "queryFn" | "queryKey"
+  >;
+}
+
+export function useCreateQuery<TData = unknown>({
+  apiClient,
+  url,
+  errorMessage,
+  defaultValue,
+  queryKey,
+  queryParams,
+  queryOptions,
+}: CreateQueryParams<TData>) {
+  return useQuery<TData, AxiosError, TData, unknown[]>({
+    queryKey: queryParams ? [queryKey, queryParams] : [queryKey],
+    queryFn: async ({ signal }) => {
+      try {
+        const response: AxiosResponse<TData> = await apiClient({
+          url,
+          method: "get",
+          params: queryParams,
+          signal,
+        });
+
+        return response.data;
+      } catch (error) {
+        if (errorMessage && error instanceof AxiosError) {
+          const errMessage =
+            typeof errorMessage === "function"
+              ? errorMessage(error)
+              : errorMessage || "An error occurred";
+
+          if (errMessage) {
+            toastService.error(errMessage);
+          }
+        }
+        throw error;
+      }
+    },
+    initialData: defaultValue,
+    ...queryOptions,
   });
 }
