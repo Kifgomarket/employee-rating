@@ -1,6 +1,6 @@
 "use client";
 
-import createApiClient from "@/app/api/helpers/baseApi";
+import createApiClient from "@/app/api-client/baseApi";
 import { AxiosInstance } from "axios";
 import { createContext, ReactNode, useContext } from "react";
 
