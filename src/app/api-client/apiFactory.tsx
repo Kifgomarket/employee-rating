@@ -3,6 +3,9 @@ import {
   UseMutationOptions,
   useQuery,
   UseQueryOptions,
+  useInfiniteQuery,
+  UseInfiniteQueryOptions,
+  InfiniteData,
 } from "@tanstack/react-query";
 import { AxiosError, AxiosInstance, AxiosResponse, isAxiosError } from "axios";
 import queryClient from "./QueryClient";
@@ -25,7 +28,7 @@ export type MutationContext<TOptimisticData> =
 interface CreateMutationParams<TData, TParams, TBody, TOptimisticData> {
   apiClient: AxiosInstance;
   method: HttpMethod;
-  url: string; // URL can have dynamic parts (e.g., `/api/resource/${id}`)
+  url: string;
   optimisticUpdate?: (
     previousValue: TOptimisticData | undefined,
     variables: TBody,
@@ -147,7 +150,7 @@ export function useCreateMutation<
 
 interface CreateQueryParams<TData> {
   apiClient: AxiosInstance;
-  url: string; // URL can have dynamic parts (e.g., `/api/resource/${id}`)
+  url: string;
   errorMessage?: string | ((error: AxiosError) => string);
   defaultValue?: TData;
   queryKey: string;
@@ -197,3 +200,106 @@ export function useCreateQuery<TData = unknown>({
     ...queryOptions,
   });
 }
+
+// -------------------- useCreateInfiniteQuery --------------------
+
+export interface CreateInfiniteQueryParams<TData, TQueryParams> {
+  apiClient: AxiosInstance;
+  url: string;
+  errorMessage?: string | ((error: AxiosError) => string);
+  queryKey: string;
+  queryParams?: TQueryParams;
+  queryOptions?: Omit<
+    UseInfiniteQueryOptions<
+      TData,
+      AxiosError,
+      InfiniteData<TData>,
+      TData,
+      unknown[],
+      unknown
+    >,
+    "queryKey" | "queryFn" | "initialPageParam" | "getNextPageParam"
+  >;
+  getNextPageParam: (lastPage: TData, allPages: TData[]) => unknown | undefined;
+  initialPageParam: unknown;
+  keysToRemoveFromQueryParams?: (keyof TQueryParams)[];
+}
+
+export function useCreateInfiniteQuery<
+  TData = unknown,
+  TQueryParams = Record<string, any>,
+>({
+  apiClient,
+  url,
+  errorMessage,
+  queryKey,
+  queryParams,
+  queryOptions,
+  getNextPageParam,
+  initialPageParam,
+  keysToRemoveFromQueryParams = [],
+}: CreateInfiniteQueryParams<TData, TQueryParams>) {
+  const keysToRemove = keysToRemoveFromQueryParams.map(String);
+
+  const filteredQueryParams = filterQueryParams(
+    queryParams || {},
+    keysToRemove,
+  );
+
+  return useInfiniteQuery<
+    TData,
+    AxiosError,
+    InfiniteData<TData>,
+    unknown[],
+    unknown
+  >({
+    queryKey:
+      Object.keys(filteredQueryParams).length > 0
+        ? [queryKey, filteredQueryParams]
+        : [queryKey],
+    queryFn: async ({ pageParam }) => {
+      try {
+        const updatedParams = {
+          ...queryParams,
+          offset: pageParam, // Assuming `offset` is used for pagination
+        };
+
+        const response: AxiosResponse<TData> = await apiClient({
+          url,
+          method: "get",
+          params: updatedParams,
+        });
+
+        return response.data;
+      } catch (error) {
+        if (errorMessage && error instanceof AxiosError) {
+          const errMessage =
+            typeof errorMessage === "function"
+              ? errorMessage(error)
+              : errorMessage || "An error occurred";
+
+          if (errMessage) {
+            toastService.error(errMessage);
+          }
+        }
+        throw error;
+      }
+    },
+    getNextPageParam,
+    initialPageParam,
+    ...queryOptions,
+  });
+}
+
+const filterQueryParams = <T extends Record<string, any>>(
+  object: T,
+  keysToRemove: string[],
+): Partial<T> => {
+  const tempObject = { ...object };
+
+  keysToRemove.forEach((key) => {
+    delete tempObject[key as keyof T];
+  });
+
+  return tempObject;
+};
