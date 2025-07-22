@@ -1,4 +1,4 @@
-import { LoginUserSchema } from "@/schemas/user.schema";
+import { LoginUserSchema, RegisterUserSchema } from "@/schemas/user.schema";
 import { Prisma, User } from "@prisma/client";
 import { z } from "zod";
 
@@ -9,6 +9,8 @@ export type LoginInput = z.infer<typeof LoginUserSchema>;
 export type UserWithOrgMembers = Prisma.UserGetPayload<{
   include: { OrganizationMembers: true };
 }>;
+
+export type RegisterInput = z.infer<typeof RegisterUserSchema>;
 
 export type UserWithRelations = Prisma.UserGetPayload<{
   select: {
