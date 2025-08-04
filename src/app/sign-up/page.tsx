@@ -1,17 +1,20 @@
 "use client";
+
 import React from "react";
 import { useRouter } from "next/navigation";
 import { RegisterForm } from "./RegisterForm";
 import { FcNews } from "react-icons/fc";
+import Image from "next/image";
 
-const page = () => {
+const Page = () => {
   const router = useRouter();
   return (
     <section className="flex h-dvh w-full items-center justify-center bg-gray-200 dark:bg-gray-800">
       <div className="relative grid h-dvh w-full grid-cols-1 bg-white p-1 md:grid-cols-[60%_40%] md:p-1 dark:bg-black">
         {/*left side*/}
-        <div className="overflow-hidden">
-          <img
+        <div className="relative overflow-hidden">
+          <Image
+            fill
             src="https://res.cloudinary.com/dlseuftkj/image/upload/v1753260382/pexels-rohitverma-32484144_lazhni.jpg"
             alt="Workspace"
             className="hidden h-full w-full rounded-2xl object-cover object-left md:flex"
@@ -29,7 +32,7 @@ const page = () => {
             <div>
               <p className="text-xs md:text-sm">
                 <span className="text-gray-600 dark:text-gray-500">
-                  Don't have an account?
+                  Don&apos;t have an account?
                 </span>{" "}
                 <span
                   onClick={() => router.push("/login")}
@@ -52,7 +55,7 @@ const page = () => {
             <p className="text-[0.6rem] md:text-[0.73rem]">
               By clicking Continue you confirm that you agree to
               <br />
-              Kifgo's{" "}
+              Kifgo&apos;s{" "}
               <span className="ml-1 cursor-pointer underline dark:text-white">
                 Privacy Policy
               </span>
@@ -64,4 +67,4 @@ const page = () => {
   );
 };
 
-export default page;
+export default Page;
