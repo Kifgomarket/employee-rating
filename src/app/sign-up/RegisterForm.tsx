@@ -36,10 +36,10 @@ export const RegisterForm = () => {
   });
 
   return (
-    <section className="scrollbar flex h-dvh w-full flex-col items-center-safe justify-center-safe overflow-y-auto rounded-xl p-5 @md:w-[45%]">
+    <section className="scrollbar hide-scrollbar flex h-dvh w-full flex-col items-center-safe justify-center-safe overflow-y-auto rounded-xl p-5 @md:w-[45%]">
       <div className="@container flex w-full flex-1 flex-col">
         {/* main content */}
-        <div className="mx-auto mt-10 flex w-full max-w-sm flex-1 flex-col items-center justify-center">
+        <div className=".hide-scrollbar mx-auto mt-10 flex w-full max-w-sm flex-1 flex-col items-center justify-center">
           <div className="relative flex aspect-square size-12 items-center justify-center">
             <div className="absolute -top-2 -right-2 size-12 rotate-12 rounded-xl bg-[#d00000] shadow-lg shadow-[#d00000]"></div>
             <div className="relative flex size-12 items-center justify-center rounded-xl border border-white/50 bg-white/10 text-white shadow-md backdrop-blur-sm dark:border-white/10">
