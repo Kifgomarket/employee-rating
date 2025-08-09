@@ -5,8 +5,36 @@
 @theme inline {
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
-}
 
-.hide-scrollbar::-webkit-scrollbar {
-  display: none;
+  --font-sans: "Geist", sans-serif;
+  --font-mono: "Geist Mono", monospace;
+  --font-gilroy: "Gilroy", sans-serif;
+
+  --color-primary-50: oklch(97% 0.017 343.6);
+  --color-primary-100: oklch(94.6% 0.033 342.9);
+  --color-primary-200: oklch(89.6% 0.071 342.1);
+  --color-primary-300: oklch(81.9% 0.129 344.9);
+  --color-primary-400: oklch(72.8% 0.203 349.4);
+  --color-primary-500: oklch(66.8% 0.238 354.6);
+  --color-primary-600: oklch(61.3% 0.239 1.9);
+  --color-primary-700: oklch(52.8% 0.208 5.4); /*Primary color*/
+  --color-primary-800: oklch(47.6% 0.186 5.2);
+  --color-primary-900: oklch(41.9% 0.159 3.9);
+  --color-primary-950: oklch(29.3% 0.116 4.2);
+
+  --color-primary: oklch(52.8% 0.208 5.4);
+
+  /* Styles for button (match dm.css) */
+  --color-btn: oklch(52.8% 0.208 5.4);
+  --color-btn-dark: oklch(52.8% 0.208 5.4);
+  --color-btn-hover: oklch(61.3% 0.239 1.9);
+  --color-btn-active: oklch(61.3% 0.239 1.9);
+  --color-btn-disabled: oklch(94.6% 0.024 71.5);
+
+  --color-btn-ring: oklch(52.8% 0.208 5.4);
+
+  --color-btn-text: oklch(100% 0 0);
+  --color-btn-text-disabled: oklch(55.1% 0.027 264.364);
+  --color-btn-spinner: oklch(100% 0 0);
+  /* End of Styles for button */
 }

@@ -1,26 +1,38 @@
+import { UserWithOrgMembers } from "@/app/api/auth/types";
 import cookieKeys from "@/configs/cookieKeys";
-import { User } from "@prisma/client";
+import { OrganizationMember } from "@prisma/client";
+import Cookie from "js-cookie";
 import { Dispatch, SetStateAction } from "react";
 import { create } from "zustand";
-import Cookie from "js-cookie";
 
 interface IAuthStore {
   states: {
-    user: User | null;
+    user: UserWithOrgMembers | null;
     authToken: string | null;
+    selectedOrganization: OrganizationMember | null;
   };
   actions: {
-    setUser: Dispatch<SetStateAction<User | null>>;
+    setUser: Dispatch<SetStateAction<UserWithOrgMembers | null>>;
     setAuthToken: Dispatch<SetStateAction<string | null>>;
+    setSelectedOrganization: Dispatch<
+      SetStateAction<OrganizationMember | null>
+    >;
     logout: () => void;
   };
 }
 
 const useAuthStore = create<IAuthStore>()((set) => ({
   states: {
-    user: (JSON.parse(Cookie.get(cookieKeys.USER) || "null") as User) || null,
+    user:
+      (JSON.parse(
+        Cookie.get(cookieKeys.USER) || "null",
+      ) as UserWithOrgMembers) || null,
     authToken:
       ((Cookie.get(cookieKeys.USER_TOKEN) || "null") as string) || null,
+    selectedOrganization:
+      (JSON.parse(
+        Cookie.get(cookieKeys.SELECTED_ORGANIZATION) || "null",
+      ) as OrganizationMember) || null,
   },
   actions: {
     setUser: (value) =>
@@ -39,6 +51,19 @@ const useAuthStore = create<IAuthStore>()((set) => ({
             ...states,
             authToken:
               typeof value === "function" ? value(states.authToken) : value,
+          },
+        };
+      }),
+
+    setSelectedOrganization: (value) =>
+      set(({ states }) => {
+        return {
+          states: {
+            ...states,
+            selectedOrganization:
+              typeof value === "function"
+                ? value(states.selectedOrganization)
+                : value,
           },
         };
       }),
