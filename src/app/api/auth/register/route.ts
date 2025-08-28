@@ -14,6 +14,9 @@ export async function POST(request: NextRequest) {
 
     const isUserExist = await prisma.user.findUnique({
       where: { email: validatedData.email },
+      include: {
+        OrganizationMembers: true,
+      },
     });
     if (isUserExist) {
       return NextResponse.json(
@@ -96,7 +99,10 @@ export async function POST(request: NextRequest) {
       {
         success: true,
         data: {
-          user: userResponse,
+          user: {
+            ...userResponse,
+            OrganizationMembers: [result.organizationMember],
+          },
           organization: orgResponse,
         },
         token,
