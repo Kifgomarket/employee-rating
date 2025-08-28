@@ -1,13 +1,14 @@
 import { cn } from "@/utilities/cn";
 import React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
+import Spinner from "./Spinner";
 
 export const buttonVariants = cva(
-  "group relative cursor-pointer ] text-shadow-white/30 text-shadow-xs rounded-[var(--rounded)] text-sm font-medium transition-all duration-300 [--rounded:var(--radius-xl)]",
+  "group relative cursor-pointer text-shadow-white/30 text-shadow-xs rounded-[var(--rounded)] text-sm font-medium transition-all duration-300 [--rounded:var(--radius-xl)] disabled:text-[var(--color-btn-text-disabled)] disabled:bg-[var(--color-btn-disabled)] disabled:cursor-not-allowed",
   {
     variants: {
       variant: {
-        primary: "bg-primary text-white hover:bg-primary-800",
+        primary: "bg-primary text-white hover:bg-primary-600",
         dark: "bg-gray-950 text-white hover:bg-gray-900",
         secondary: "bg-gray-200 text-gray-900 hover:bg-gray-100",
         ghost: "bg-transparent text-gray-800",
@@ -37,7 +38,6 @@ export const buttonVariants = cva(
         noise: true,
         className: "",
       },
-      // Border only applies to certain variants
       {
         variant: ["primary", "outline", "secondary"],
         border: true,
@@ -96,6 +96,7 @@ interface ButtonProps
     ButtonVariants {
   children: React.ReactNode;
   className?: string;
+  isLoading?: boolean;
 }
 
 const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
@@ -107,6 +108,7 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       border = true,
       className,
       children,
+      isLoading = false,
       ...props
     },
     ref,
@@ -118,11 +120,16 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
           buttonVariants({ variant, size, noise, border, className }),
           "group relative p-3 focus-visible:ring-2 focus-visible:ring-white/50 focus-visible:outline-none",
         )}
+        disabled={isLoading}
         {...props}
       >
         {noise && <NoiseBackground />}
         {border && <ButtonBorder />}
-        {children}
+        {!isLoading ? (
+          children
+        ) : (
+          <Spinner className="size-4 text-[var(--color-btn-text-disabled)] dark:text-[var(--color-btn-text-disabled)]" />
+        )}
       </button>
     );
   },

@@ -18,7 +18,7 @@ interface IThemeStore {
 const useThemeStore = create<IThemeStore>()((set) => ({
   states: {
     theme: "",
-    mode: "system",
+    mode: "light",
   },
   actions: {
     setMode: (value) =>
@@ -26,7 +26,7 @@ const useThemeStore = create<IThemeStore>()((set) => ({
         const modeValue =
           typeof value === "function" ? value(states.mode) : value;
 
-        const defaultedFallback = modeValue ?? "system";
+        const defaultedFallback = modeValue ?? "light";
 
         Cookie.set(cookieKeys.COLOR_MODE, defaultedFallback);
         return {
@@ -58,7 +58,7 @@ const useSetInitialTheme = () => {
 
   useEffect(() => {
     const colorMode = Cookie.get(cookieKeys.COLOR_MODE);
-    setMode(colorMode !== "undefined" ? (colorMode as Mode) : "system");
+    setMode(colorMode !== "undefined" ? (colorMode as Mode) : "light");
     setColorScheme(window.matchMedia("(prefers-color-scheme: dark)"));
   }, [setMode]);
 

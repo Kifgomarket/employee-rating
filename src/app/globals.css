@@ -29,12 +29,12 @@
   --color-btn-dark: oklch(52.8% 0.208 5.4);
   --color-btn-hover: oklch(61.3% 0.239 1.9);
   --color-btn-active: oklch(61.3% 0.239 1.9);
-  --color-btn-disabled: oklch(94.6% 0.024 71.5);
+  --color-btn-disabled: oklch(0.9249 0 0);
 
   --color-btn-ring: oklch(52.8% 0.208 5.4);
 
   --color-btn-text: oklch(100% 0 0);
   --color-btn-text-disabled: oklch(55.1% 0.027 264.364);
-  --color-btn-spinner: oklch(100% 0 0);
+  --color-btn-spinner: oklch(55.1% 0.027 264.364);
   /* End of Styles for button */
 }
