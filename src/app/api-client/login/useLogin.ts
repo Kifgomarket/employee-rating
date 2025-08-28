@@ -1,7 +1,6 @@
+import { LoginInput, UserWithOrgMembers } from "@/app/api/auth/types";
 import { useApi } from "@/providers/ApiProvider";
 import { useCreateMutation } from "../apiFactory";
-import { User } from "@prisma/client";
-import { LoginInput } from "@/app/api/auth/types";
 
 export const useLogin = ({
   invalidateQueryKey,
@@ -13,8 +12,8 @@ export const useLogin = ({
   return useCreateMutation<
     Record<string, any>,
     LoginInput,
-    { data: { user: User; token: string } },
-    { data: { user: User; token: string } }
+    { data: { user: UserWithOrgMembers; token: string } },
+    { data: { user: UserWithOrgMembers; token: string } }
   >({
     apiClient: jsonApiClient,
     method: "post",

@@ -1,38 +1,36 @@
 "use client";
 
-import { useThemeActions } from "@/stores/themeStore";
+import Spinner from "@/components/Spinner";
+import { useAuth } from "@/stores/authStore";
+import { UserRole } from "@prisma/client";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 const Home = () => {
-  const { setMode } = useThemeActions();
+  const router = useRouter();
+  const { user, selectedOrganization } = useAuth();
+
+  useEffect(() => {
+    if (user && selectedOrganization && user.OrganizationMembers.length > 0) {
+      const role = selectedOrganization.role;
+
+      if (role === UserRole.OWNER) {
+        router.push("/owner-dashboard");
+      }
+
+      if (role === UserRole.SUPERVISOR) {
+        router.push("/supervisor-dashboard");
+      }
+
+      if (role === UserRole.EMPLOYEE) {
+        router.push("/employee-dashboard");
+      }
+    }
+  }, [user, router, selectedOrganization]);
+
   return (
     <section className="flex h-dvh w-full flex-col items-center justify-center dark:bg-gray-950">
-      <h1 className="text-2xl font-semibold text-gray-800 dark:text-white">
-        Employee Rating
-      </h1>
-      <p className="text-xs text-gray-600 dark:text-white/60">
-        An Application to rate employees
-      </p>
-
-      <div className="mt-5 flex items-center justify-center gap-3">
-        <button
-          onClick={() => setMode("system")}
-          className="text-xs text-gray-800 hover:underline focus:outline-0 dark:text-white"
-        >
-          system
-        </button>
-        <button
-          onClick={() => setMode("light")}
-          className="text-xs text-gray-800 hover:underline focus:outline-0 dark:text-white"
-        >
-          light
-        </button>
-        <button
-          onClick={() => setMode("dark")}
-          className="text-xs text-gray-800 hover:underline focus:outline-0 dark:text-white"
-        >
-          dark
-        </button>
-      </div>
+      <Spinner size={"xs"} />
     </section>
   );
 };

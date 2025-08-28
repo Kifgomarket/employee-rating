@@ -13,6 +13,16 @@ import { JsonWebTokenError, TokenExpiredError } from "jsonwebtoken";
  *   - 500: For all other errors with a generic message.
  * @throws No explicit throws, but may propagate errors if `z.parse()` fails internally (unlikely with proper schema usage).
  */
+
+export type CustomError = {
+  success: boolean;
+  error: {
+    code: string;
+    message: string;
+    errors?: Record<string, unknown>[];
+  };
+};
+
 export default function handleError(error: any, defaultMessage: string) {
   console.error(defaultMessage, error);
 

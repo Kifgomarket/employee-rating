@@ -1,11 +1,11 @@
-import { OWNER_PERMISSIONS } from "@/app/permission";
-import prisma from "@/lib/prisma"; // Adjust the path based on your project structure
+import prisma from "@/lib/prisma";
 import { RegisterUserSchema } from "@/schemas/user.schema";
 import { UserRole } from "@prisma/client";
 import argon2 from "argon2";
 import { NextRequest, NextResponse } from "next/server";
 import generateToken, { IJWTPayload } from "../../helpers/generateToken";
 import handleError from "../../helpers/handleError";
+import { OWNER_PERMISSIONS } from "../permissions";
 
 export async function POST(request: NextRequest) {
   try {
