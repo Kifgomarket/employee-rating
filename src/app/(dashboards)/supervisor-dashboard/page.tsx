@@ -1,16 +1,14 @@
 "use client";
 
-import Button from "@/components/Button";
-import { useAuthActions } from "@/stores/authStore";
-import React from "react";
+import Topbar from "../Topbar";
 
 const Page = () => {
-  const { logout } = useAuthActions();
   return (
-    <div>
-      Supervisor dashboard
-      <Button onClick={logout}>Logout</Button>
-    </div>
+    <section className="flex h-full flex-1 flex-col">
+      <Topbar heading={"Supervisor Dashboard"} />
+
+      <div className="scrollbar mt-5 w-full flex-1 overflow-x-hidden overflow-y-auto"></div>
+    </section>
   );
 };
 
