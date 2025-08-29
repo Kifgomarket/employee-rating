@@ -19,7 +19,7 @@ const OrganizationSelector = () => {
         <Form
           validationSchema={z.object({ selected_organization: z.string() })}
           defaultValues={{
-            selected_organization: selectedOrganization?.id || "",
+            selected_organization: selectedOrganization?.organizationId || "",
           }}
         >
           <Field>
@@ -28,7 +28,7 @@ const OrganizationSelector = () => {
               name="selected_organization"
               onChange={(val) => {
                 const [selected] = memberships.data.filter(
-                  (member) => member.id === val,
+                  (member) => member.organizationId === val,
                 );
                 setSelectedOrganization(selected);
                 Cookie.set(
@@ -38,7 +38,10 @@ const OrganizationSelector = () => {
               }}
             >
               {memberships?.data?.map((membership, idx) => (
-                <Select.Option key={membership.id} value={membership.id}>
+                <Select.Option
+                  key={membership.organizationId}
+                  value={membership.organizationId}
+                >
                   Organization {idx + 1}
                 </Select.Option>
               ))}

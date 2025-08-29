@@ -14,7 +14,7 @@ import { BsBookmarkStarFill } from "react-icons/bs";
 import {
   IoChevronForward,
   IoLogOut,
-  IoReader,
+  IoPeopleSharp,
   IoSettings,
   IoTrendingUpOutline,
 } from "react-icons/io5";
@@ -142,7 +142,7 @@ const Sidebar = () => {
           <div className="flex w-full flex-col space-y-0.5">
             <Title>Controls</Title>
             <NavLink
-              href={"/admin/dashboard"}
+              href={"/owner-dashboard/dashboard"}
               Icon={() => (
                 <div className="bg-primary rounded-xl p-2 text-white shadow-md">
                   <IoTrendingUpOutline className="size-5" />
@@ -153,17 +153,17 @@ const Sidebar = () => {
             </NavLink>
 
             <NavLink
-              href={"/admin/logs"}
+              href={"/owner-dashboard/employees"}
               Icon={() => (
                 <div className="bg-primary rounded-xl p-2 text-white shadow-md">
-                  <IoReader className="size-5" />
+                  <IoPeopleSharp className="size-5" />
                 </div>
               )}
             >
-              {() => <p>Logs</p>}
+              {() => <p>Employees</p>}
             </NavLink>
           </div>
-
+          {/* 
           <div className="mt-5 w-full space-y-0.5">
             <Title>agent</Title>
 
@@ -216,7 +216,7 @@ const Sidebar = () => {
             >
               {() => <p>Create new hub</p>}
             </NavLink>
-          </div>
+          </div> */}
         </div>
 
         <div className="w-full space-y-0.5 px-5 pt-3">

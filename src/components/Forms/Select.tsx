@@ -117,11 +117,7 @@ const SelectRoot = forwardRef<HTMLButtonElement, SelectProps>(
               <IoChevronDown
                 className={cn(
                   // Base styles
-                  "size-4 text-gray-600 transition-transform duration-200",
-
-                  // States
-                  // "group-data-[state=open]:rotate-180",
-                  "group-data-[disabled]:text-gray-400",
+                  "ml-3 size-4 text-gray-600 transition-transform duration-200",
 
                   //Custom class
                   chevronClass,
